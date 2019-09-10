@@ -18,9 +18,7 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView.register(UserHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "UserHeaderView")
-
-
+        
         getjson()
         
         // Do any additional setup after loading the view.
@@ -45,39 +43,23 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
         
         // get a reference to our storyboard cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! ImageCell
-        cell.backgroundColor = .clear
         let usersImages:[User] = users!
-            let items = usersImages[indexPath.section].items
+        let items = usersImages[indexPath.section].items
         
         let url = URL(string: items[indexPath.row])
         cell.userImage.kf.setImage(with: url)
-
         
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
         return CGSize(width: UIScreen.main.bounds.width, height: 50)
-
+        
     }
     
-//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//
-//        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "UserHeaderView", for: indexPath)  as! UserHeaderView
-//        let usersImages:[User] = users!
-//        let user = usersImages[indexPath.section]
-//
-//        let url = URL(string: user.image)
-////        headerView.profilePic.kf.setImage(with: url)
-//
-////        headerView.userName.text = user.name
-//        return headerView
-//
-//    }
-
-     func collectionView(_ collectionView: UICollectionView,
-                                 viewForSupplementaryElementOfKind kind: String,
-                                 at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
         // 1
         switch kind {
         // 2
@@ -86,22 +68,33 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
             guard
                 let headerView = collectionView.dequeueReusableSupplementaryView(
                     ofKind: kind,
-                    withReuseIdentifier: "\(UserHeaderView.self)",
+                    withReuseIdentifier: "UserHeaderView",
                     for: indexPath) as? UserHeaderView
                 else {
                     fatalError("Invalid view type")
             }
             
-//            let searchTerm = searches[indexPath.section].searchTerm
-//            headerView.label.text = searchTerm
+            headerView.profilePic.layer.borderWidth = 1.0
+            headerView.profilePic.layer.masksToBounds = false
+            headerView.profilePic.layer.borderColor = UIColor.white.cgColor
+            headerView.profilePic.layer.cornerRadius = 30 / 2
+            headerView.profilePic.clipsToBounds = true
+            
+            let usersImages:[User] = users!
+            let user = usersImages[indexPath.section]
+            headerView.userName.text = user.name
+            let url = URL(string: user.image)
+            headerView.profilePic.kf.setImage(with: url)
+            
+            
             return headerView
         default:
             // 4
             assert(false, "Invalid element type")
         }
     }
-
-
+    
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -110,19 +103,19 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
             if items % 2 == 0 {
                 print("\(items) is even number")
                 return CGSize(width: (UIScreen.main.bounds.width/2)-6 , height: (UIScreen.main.bounds.width/2))
-
+                
             } else {
                 print("\(items) is odd number")
                 if indexPath.row == 0 {
-                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
+                    return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
                 }
                 else {
-                return CGSize(width: (UIScreen.main.bounds.width/2)-6 , height: (UIScreen.main.bounds.width/2))
+                    return CGSize(width: (UIScreen.main.bounds.width/2)-6 , height: (UIScreen.main.bounds.width/2))
                 }
-
+                
             }
         }
-
+        
         
         return CGSize(width: (UIScreen.main.bounds.width/2) - 15
             , height: (UIScreen.main.bounds.width/2))
@@ -160,8 +153,6 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                     }
-                    
-                    
                 }
             } catch let parseError as NSError {
                 print("JSON Error \(parseError.localizedDescription)")
@@ -170,6 +161,6 @@ class ViewController: UIViewController,UICollectionViewDataSource, UICollectionV
         
         task.resume()
     }
-
+    
 }
 
